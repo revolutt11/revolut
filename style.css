@@ -1,0 +1,463 @@
+/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #000000;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: rgba(0, 0, 0, 0.85);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.nav-logo {
+    height: 32px;
+    width: auto;
+    border-radius: 4px;
+    background-color: white;
+    padding: 4px 8px;
+    object-fit: contain;
+}
+
+.nav-links a {
+    color: #ffffff;
+    text-decoration: none;
+    margin-left: 25px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.nav-links a:hover {
+    color: #ccc;
+}
+
+.hero {
+    height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2000&auto=format&fit=crop') no-repeat center center/cover;
+    display: flex;
+    align-items: center;
+    padding: 0 80px;
+    position: relative;
+}
+
+.hero-content {
+    max-width: 600px;
+}
+
+.hero-content h1 {
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+}
+
+.hero-content p {
+    font-size: 18px;
+    color: #ccc;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.hero-btn {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 16px 32px;
+    border-radius: 50px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    width: auto;
+}
+
+.hero-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.login-wrapper {
+    position: absolute;
+    right: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 400px;
+    background-color: #111111;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    border: 1px solid #222;
+}
+
+.login-wrapper h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 16px;
+    margin: 8px 0;
+    border-radius: 12px;
+    border: 1px solid #333;
+    background-color: #1a1a1a;
+    color: white;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+}
+
+input:focus {
+    outline: none;
+    border-color: #666;
+}
+
+button {
+    width: 100%;
+    padding: 16px;
+    margin-top: 10px;
+    border-radius: 12px;
+    border: none;
+    background-color: #ffffff;
+    color: #000000;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: 0.2s;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}
+
+.toggle-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #888;
+    font-size: 14px;
+}
+
+.toggle-link a {
+    color: #ffffff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.dashboard-container {
+    padding: 120px 40px 40px 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.dashboard-card {
+    background-color: #111;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #222;
+}
+
+.dashboard-card h3 {
+    font-size: 14px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.balance-amount {
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.balance-sub {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+#history-box ul {
+    max-height: 200px;
+    overflow-y: auto;
+    list-style: none;
+    margin-top: 10px;
+}
+
+#history-box li {
+    padding: 12px 0;
+    border-bottom: 1px solid #222;
+    font-size: 14px;
+}
+
+/* ==========================================
+   ADDED SECTIONS FOR THE HOMEPAGE
+   ========================================== */
+
+/* --- TRUST BAR --- */
+.trust-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 40px 80px;
+    border-bottom: 1px solid #222;
+    gap: 30px;
+}
+
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.trust-icon {
+    font-size: 30px;
+    color: #4CAF50;
+    background: #111;
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.trust-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.trust-sub {
+    font-size: 12px;
+    color: #888;
+    margin-top: 3px;
+}
+
+/* --- SECTIONS --- */
+.section {
+    padding: 80px 80px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.dark-section {
+    background-color: #0a0a0a;
+    max-width: 100%;
+    border-top: 1px solid #222;
+    border-bottom: 1px solid #222;
+}
+
+.section-title {
+    font-size: 42px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 15px;
+    letter-spacing: -1px;
+}
+
+.section-sub {
+    font-size: 18px;
+    color: #888;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 60px auto;
+    line-height: 1.6;
+}
+
+/* --- FEATURES GRID --- */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.feature-card {
+    background: #111;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #222;
+    transition: 0.3s;
+}
+
+.feature-card:hover {
+    border-color: #4CAF50;
+    transform: translateY(-4px);
+}
+
+.feature-icon {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.feature-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1.3;
+}
+
+.feature-card p {
+    font-size: 14px;
+    color: #888;
+    line-height: 1.6;
+}
+
+/* --- MONITOR GRID --- */
+.monitor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.monitor-card {
+    background: #111;
+    padding: 40px 30px;
+    border-radius: 20px;
+    border: 1px solid #222;
+    text-align: center;
+}
+
+.monitor-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+}
+
+.monitor-card h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.monitor-card p {
+    font-size: 14px;
+    color: #888;
+    line-height: 1.6;
+}
+
+/* --- STEPS GRID --- */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.step-card {
+    background: #111;
+    padding: 40px 30px;
+    border-radius: 20px;
+    border: 1px solid #222;
+    text-align: center;
+}
+
+.step-number {
+    font-size: 48px;
+    font-weight: 800;
+    color: #4CAF50;
+    margin-bottom: 15px;
+}
+
+.step-card h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.step-card p {
+    font-size: 14px;
+    color: #888;
+    line-height: 1.6;
+}
+
+/* --- FOOTER --- */
+.footer {
+    background-color: #050505;
+    padding: 60px 80px 40px 80px;
+    border-top: 1px solid #222;
+    margin-top: 40px;
+}
+
+.footer-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    font-size: 12px;
+    color: #666;
+    line-height: 1.7;
+}
+
+.footer-content p {
+    margin-bottom: 15px;
+}
+
+.footer-content strong {
+    color: #aaa;
+}
+
+/* --- RESPONSIVE (mobile) --- */
+@media (max-width: 900px) {
+    .hero {
+        flex-direction: column;
+        padding: 100px 20px 40px 20px;
+        height: auto;
+    }
+    .login-wrapper {
+        position: static;
+        transform: none;
+        margin-top: 40px;
+        width: 100%;
+    }
+    .hero-content h1 {
+        font-size: 40px;
+    }
+    .features-grid,
+    .monitor-grid,
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+    .section {
+        padding: 60px 20px;
+    }
+    .trust-bar {
+        padding: 30px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .dashboard-container {
+        grid-template-columns: 1fr;
+        padding: 100px 20px 40px 20px;
+    }
+}

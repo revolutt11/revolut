@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revolut Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* ---- MODAL / POPUP STYLES ---- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal-box {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 40px;
+            width: 420px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-box h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .modal-box p {
+            color: #888;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .modal-box input {
+            width: 100%;
+            padding: 16px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            font-family: 'Inter', sans-serif;
+        }
+        .modal-box input:focus { outline: none; border-color: #4CAF50; }
+
+        .modal-box button {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .modal-box button:hover { background: #45a049; }
+
+        .modal-box button.secondary-btn {
+            background: #333;
+            color: #fff;
+            margin-top: 10px;
+        }
+        .modal-box button.secondary-btn:hover { background: #444; }
+
+        .modal-error {
+            color: #ff6666;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+            min-height: 18px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: #222;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 10px;
+            margin: 25px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 1.2s ease;
+            border-radius: 12px;
+        }
+        .progress-text {
+            text-align: center;
+            color: #4CAF50;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .modal-success-icon {
+            font-size: 60px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-warning-icon {
+            font-size: 60px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .info-box {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #ccc;
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: left;
+        }
+        .info-box strong { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <img src="revolutlogo.jpg" alt="Revolut" class="nav-logo">
+        <div class="nav-links">
+            <a href="personal.html">Personal</a>
+            <a href="business.html">Business</a>
+            <a href="features.html">Features</a>
+            <a href="help.html">Help</a>
+            <a href="javascript:void(0);" onclick="logout()" style="color: #ff4444;">Log Out</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+
+        <!-- LEFT COLUMN -->
+        <div>
+            <h2 style="font-size: 28px; margin-bottom: 20px;">Hello, <span id="user-display">Loading...</span>!</h2>
+
+            <div id="error-box" style="display: none; background: #3a0f0f; border: 1px solid #ff4444; padding: 15px; border-radius: 12px; margin-bottom: 20px; color: #ff8888; font-size: 14px;"></div>
+
+            <div class="dashboard-card" style="margin-bottom: 20px; background: #0d1f0d; border-color: #4CAF50;">
+                <h3 style="color: #4CAF50;">Your Account Number</h3>
+                <div class="balance-amount" id="account-number" style="font-size: 22px; letter-spacing: 2px;">Loading...</div>
+                <div class="balance-sub">Share this to receive money</div>
+            </div>
+
+            <div class="dashboard-card" style="margin-bottom: 20px;">
+                <h3>USD Balance</h3>
+                <div class="balance-amount">$<span id="usd-balance">...</span></div>
+                <div class="balance-sub">Available to spend</div>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Crypto Balance (BTC)</h3>
+                <div class="balance-amount">₿<span id="crypto-balance">...</span></div>
+                <div class="balance-sub">Bitcoin holdings</div>
+            </div>
+
+            <button onclick="loadDashboard()" style="background-color: #222; color: white; margin-top: 20px;">Refresh Balance</button>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+
+            <div class="dashboard-card" style="margin-bottom: 20px; border-color: #4CAF50;">
+                <h3 style="color: #4CAF50;">Add Money (Bank Deposit)</h3>
+                <input type="text" id="deposit-bank-name" placeholder="Your Bank Name (e.g. Chase)">
+                <input type="text" id="deposit-account-number" placeholder="Your External Account Number">
+                <input type="text" id="deposit-routing" placeholder="Routing Number / SWIFT">
+                <input type="number" id="deposit-amount" placeholder="Amount in USD">
+                <input type="text" id="deposit-reference" placeholder="Reference (optional)">
+                <button onclick="startDeposit()" style="background-color: #4CAF50; color: white;">Deposit Funds</button>
+            </div>
+
+            <div class="dashboard-card" style="margin-bottom: 20px;">
+                <h3>Send Money (External Transfer)</h3>
+                <input type="text" id="recipient-name" placeholder="Recipient Full Name">
+                <input type="text" id="recipient-account" placeholder="Recipient Account Number">
+                <input type="text" id="recipient-routing" placeholder="Routing Number / SWIFT">
+                <input type="number" id="transfer-amount" placeholder="Amount in USD">
+                <input type="text" id="transfer-note" placeholder="Reference (optional)">
+                <button onclick="startTransfer()">Send Money</button>
+            </div>
+
+            <div class="dashboard-card" style="margin-bottom: 20px;">
+                <h3>Exchange USD to Crypto</h3>
+                <input type="number" id="exchange-amount" placeholder="Amount in USD">
+                <button onclick="exchangeCrypto()">Exchange to BTC</button>
+            </div>
+
+            <div class="dashboard-card" style="margin-bottom: 20px; border-color: #4A90E2;">
+                <h3 style="color: #4A90E2;">Edit Profile</h3>
+                <input type="text" id="new-username" placeholder="New Username">
+                <input type="text" id="new-fullname" placeholder="Full Name">
+                <button onclick="updateProfile()" style="background-color: #4A90E2; color: white;">Save Changes</button>
+            </div>
+
+            <div class="dashboard-card" style="margin-bottom: 20px;">
+                <h3>Change Password</h3>
+                <input type="password" id="new-password" placeholder="New Password">
+                <button onclick="changePassword()">Update Password</button>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Account History</h3>
+                <button onclick="showHistory()" style="background-color: #333; color: white;">View History</button>
+                <div id="history-box" class="hidden" style="margin-top: 15px; background: #1a1a1a; padding: 15px; border-radius: 12px;">
+                    <ul id="history-list"></ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ====== VERIFICATION MODAL ====== -->
+    <div class="modal-overlay" id="verify-modal">
+        <div class="modal-box" id="modal-content">
+            <!-- Content will be replaced by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://nlbfetgibsmhfoinvkst.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_w4c-2IfXyKHLKWxo9VvjAQ_7gMExdkj';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+
+        // ---- DEMO SECURITY CODES (for transfer) ----
+        const UK_TAX_PIN = "4821";
+        const COUNTRY_TAX_ID = "GB-TAX-9920";
+
+        let pendingTransfer = null;
+
+        function showError(msg) {
+            const box = document.getElementById("error-box");
+            box.style.display = "block";
+            box.innerText = "⚠️ " + msg;
+        }
+
+        function generateAccountNumber() {
+            return "RV" + Math.floor(10000000 + Math.random() * 90000000);
+        }
+
+        window.onload = async function() {
+            if (localStorage.getItem("isLoggedIn") !== "true") {
+                window.location.href = "index.html";
+                return;
+            }
+            await loadDashboard();
+        };
+
+        // ---------- LOAD DASHBOARD ----------
+        async function loadDashboard() {
+            try {
+                const { data: { user }, error: userError } = await sb.auth.getUser();
+
+                if (userError || !user) {
+                    showError("Session expired. Please log in again.");
+                    setTimeout(() => { window.location.href = "index.html"; }, 2000);
+                    return;
+                }
+                currentUser = user;
+
+                const { data: profile, error } = await sb
+                    .from('profiles')
+                    .select('username, full_name, usd_balance, crypto_balance, account_number')
+                    .eq('id', user.id)
+                    .maybeSingle();
+
+                if (error) { showError("Database error: " + error.message); return; }
+                if (!profile) { showError("No profile found. Please log out and sign up again."); return; }
+
+                document.getElementById("user-display").innerText = profile.full_name || profile.username || "User";
+                document.getElementById("usd-balance").innerText = parseFloat(profile.usd_balance || 0).toFixed(2);
+                document.getElementById("crypto-balance").innerText = parseFloat(profile.crypto_balance || 0).toFixed(5);
+
+                if (!profile.account_number) {
+                    const newAcc = generateAccountNumber();
+                    await sb.from('profiles').update({ account_number: newAcc }).eq('id', user.id);
+                    document.getElementById("account-number").innerText = newAcc;
+                } else {
+                    document.getElementById("account-number").innerText = profile.account_number;
+                }
+            } catch (e) {
+                showError("Unexpected error: " + e.message);
+            }
+        }
+
+        // ---------- ADD MONEY — NOW BLOCKED UNTIL SYNCHRONIZATION ----------
+        function startDeposit() {
+            let bankName = document.getElementById("deposit-bank-name").value.trim();
+            let externalAccount = document.getElementById("deposit-account-number").value.trim();
+            let routing = document.getElementById("deposit-routing").value.trim();
+            let amount = parseFloat(document.getElementById("deposit-amount").value);
+            let reference = document.getElementById("deposit-reference").value.trim();
+
+            if (!bankName || !externalAccount || !routing || !amount) {
+                alert("Please fill in all required fields: Bank Name, External Account Number, Routing/SWIFT, and Amount.");
+                return;
+            }
+            if (routing.length < 6) { alert("Routing/SWIFT number must be at least 6 characters."); return; }
+            if (amount <= 0) { alert("Amount must be greater than zero."); return; }
+            if (amount > 100000) { alert("Maximum deposit amount is $100,000 per transaction."); return; }
+
+            // Instead of adding money, we block with a synchronization warning
+            showSyncRequiredModal(bankName, externalAccount, routing, amount, reference);
+        }
+
+        function showSyncRequiredModal(bankName, externalAccount, routing, amount, reference) {
+            const modal = document.getElementById("verify-modal");
+            const content = document.getElementById("modal-content");
+
+            content.innerHTML = `
+                <div class="modal-warning-icon">🔄</div>
+                <h2>Account Synchronization Required</h2>
+                <p>Before your deposit can be credited, your account must be synchronised with our Customer Care team.</p>
+
+                <div class="info-box">
+                    <strong>Deposit Details:</strong><br>
+                    Bank: ${bankName}<br>
+                    Account: ${externalAccount}<br>
+                    Routing/SWIFT: ${routing}<br>
+                    Amount: $${amount.toFixed(2)}<br>
+                    Reference: ${reference || "N/A"}
+                </div>
+
+                <p style="color:#ffaa44; font-size:13px;">⚠️ Your funds are on hold. Please contact Customer Care to complete the synchronisation and unlock your deposit.</p>
+
+                <button onclick="contactCustomerCare()">📞 Contact Customer Care</button>
+                <button class="secondary-btn" onclick="closeModal()">Cancel</button>
+            `;
+
+            modal.classList.add("active");
+        }
+
+        function contactCustomerCare() {
+            const content = document.getElementById("modal-content");
+            content.innerHTML = `
+                <div class="modal-warning-icon">📞</div>
+                <h2>Customer Care Contact</h2>
+                <p>Please contact our Customer Care team to complete the account synchronisation. Your deposit will remain on hold until then.</p>
+
+                <div class="info-box">
+                    <strong>Customer Care:</strong><br>
+                    📞 Phone: +44 7828 777982<br>
+                    📧 Email: support@revolutproject.com<br>
+                    🕐 Hours: 24 / 7
+                </div>
+
+                <p style="color:#ffaa44; font-size:13px;">Please have your account number ready when you call.</p>
+
+                <button onclick="closeModal()">Close</button>
+            `;
+        }
+
+        // ---------- START TRANSFER ----------
+        async function startTransfer() {
+            let recipientName = document.getElementById("recipient-name").value.trim();
+            let recipientAccount = document.getElementById("recipient-account").value.trim();
+            let recipientRouting = document.getElementById("recipient-routing").value.trim();
+            let amount = parseFloat(document.getElementById("transfer-amount").value);
+            let note = document.getElementById("transfer-note").value.trim();
+
+            if (!recipientName || !recipientAccount || !recipientRouting || !amount) {
+                alert("Please fill in all required fields (Name, Account Number, Routing Number, Amount).");
+                return;
+            }
+            if (amount <= 0) { alert("Amount must be greater than zero."); return; }
+
+            const { data: profile } = await sb.from('profiles').select('usd_balance').eq('id', currentUser.id).single();
+            if (amount > profile.usd_balance) {
+                alert("Insufficient funds. You only have $" + parseFloat(profile.usd_balance).toFixed(2));
+                return;
+            }
+
+            pendingTransfer = {
+                recipientName: recipientName,
+                recipientAccount: recipientAccount,
+                recipientRouting: recipientRouting,
+                amount: amount,
+                note: note
+            };
+
+            showTaxPinStep();
+        }
+
+        function showTaxPinStep() {
+            const modal = document.getElementById("verify-modal");
+            const content = document.getElementById("modal-content");
+
+            content.innerHTML = `
+                <h2>🔒 Security Verification</h2>
+                <p>Please enter your <strong style="color:#4CAF50;">UK Tax PIN</strong> to authorise this transfer of <strong style="color:#fff;">$${pendingTransfer.amount.toFixed(2)}</strong>.</p>
+                <input type="password" id="tax-pin-input" placeholder="● ● ● ●" maxlength="10" inputmode="numeric">
+                <button onclick="verifyTaxPin()">Verify</button>
+                <button class="secondary-btn" onclick="closeModal()">Cancel</button>
+                <div class="modal-error" id="modal-error"></div>
+            `;
+
+            modal.classList.add("active");
+            setTimeout(() => document.getElementById("tax-pin-input").focus(), 100);
+        }
+
+        function verifyTaxPin() {
+            const input = document.getElementById("tax-pin-input").value.trim();
+            const err = document.getElementById("modal-error");
+
+            if (input === "") { err.innerText = "Please enter your UK Tax PIN."; return; }
+            if (input !== UK_TAX_PIN) {
+                err.innerText = "Invalid UK Tax PIN. Please try again.";
+                document.getElementById("tax-pin-input").value = "";
+                return;
+            }
+
+            showLoadingStep();
+        }
+
+        function showLoadingStep() {
+            const content = document.getElementById("modal-content");
+            content.innerHTML = `
+                <h2>Verifying...</h2>
+                <p>Your UK Tax PIN has been verified. Preparing for next step.</p>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="progress-text" id="progress-text">0%</div>
+            `;
+
+            const bar = document.getElementById("progress-bar");
+            const text = document.getElementById("progress-text");
+
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                if (progress > 80) progress = 80;
+                bar.style.width = progress + "%";
+                text.innerText = progress + "%";
+
+                if (progress >= 80) {
+                    clearInterval(interval);
+                    setTimeout(showCountryTaxIdStep, 1200);
+                }
+            }, 60);
+        }
+
+        function showCountryTaxIdStep() {
+            const content = document.getElementById("modal-content");
+            content.innerHTML = `
+                <h2>🌍 Final Verification</h2>
+                <p>Please enter your <strong style="color:#4CAF50;">Country Tax ID</strong> to complete the transfer.</p>
+                <input type="text" id="tax-id-input" placeholder="e.g. GB-TAX-XXXX" maxlength="30">
+                <button onclick="verifyCountryTaxId()">Complete Transfer</button>
+                <button class="secondary-btn" onclick="closeModal()">Cancel</button>
+                <div class="modal-error" id="modal-error"></div>
+            `;
+            setTimeout(() => document.getElementById("tax-id-input").focus(), 100);
+        }
+
+        async function verifyCountryTaxId() {
+            const input = document.getElementById("tax-id-input").value.trim();
+            const err = document.getElementById("modal-error");
+
+            if (input === "") { err.innerText = "Please enter your Country Tax ID."; return; }
+            if (input.toUpperCase() !== COUNTRY_TAX_ID) {
+                err.innerText = "Invalid Country Tax ID. Please try again.";
+                return;
+            }
+
+            showSuccessStep();
+            await processTransfer();
+        }
+
+        function showSuccessStep() {
+            const content = document.getElementById("modal-content");
+            content.innerHTML = `
+                <div class="modal-success-icon">✅</div>
+                <h2>Transfer Successful!</h2>
+                <p>Your transfer of <strong style="color:#4CAF50;">$${pendingTransfer.amount.toFixed(2)}</strong> to <strong style="color:#fff;">${pendingTransfer.recipientName}</strong> has been authorised and sent.</p>
+                <button onclick="closeModal()">Done</button>
+            `;
+        }
+
+        async function processTransfer() {
+            const { data: profile } = await sb.from('profiles').select('usd_balance').eq('id', currentUser.id).single();
+            let newBalance = parseFloat(profile.usd_balance) - pendingTransfer.amount;
+
+            const { error: updateError } = await sb.from('profiles').update({ usd_balance: newBalance }).eq('id', currentUser.id);
+            if (updateError) { alert("Transfer failed: " + updateError.message); closeModal(); return; }
+
+            let fullAction = `Sent to ${pendingTransfer.recipientName} (Acct: ${pendingTransfer.recipientAccount})`
+                            + (pendingTransfer.note ? ` — ${pendingTransfer.note}` : '');
+
+            await sb.from('transactions').insert([{ user_id: currentUser.id, action: fullAction, amount: pendingTransfer.amount }]);
+
+            document.getElementById("recipient-name").value = "";
+            document.getElementById("recipient-account").value = "";
+            document.getElementById("recipient-routing").value = "";
+            document.getElementById("transfer-amount").value = "";
+            document.getElementById("transfer-note").value = "";
+
+            loadDashboard();
+        }
+
+        function closeModal() {
+            document.getElementById("verify-modal").classList.remove("active");
+            pendingTransfer = null;
+        }
+
+        // ---------- EXCHANGE CRYPTO ----------
+        async function exchangeCrypto() {
+            let amountUSD = parseFloat(document.getElementById("exchange-amount").value);
+            if (!amountUSD || amountUSD <= 0) { alert("Please enter a valid amount."); return; }
+
+            const { data: profile } = await sb.from('profiles').select('usd_balance, crypto_balance').eq('id', currentUser.id).single();
+            if (amountUSD > profile.usd_balance) { alert("Not enough USD!"); return; }
+
+            let btcBought = amountUSD / 60000;
+            let newUSD = profile.usd_balance - amountUSD;
+            let newCrypto = parseFloat(profile.crypto_balance) + btcBought;
+
+            const { error } = await sb.from('profiles').update({ usd_balance: newUSD, crypto_balance: newCrypto }).eq('id', currentUser.id);
+            if (error) { alert("Exchange failed: " + error.message); return; }
+
+            await sb.from('transactions').insert([{ user_id: currentUser.id, action: 'Bought Crypto', amount: amountUSD }]);
+            alert(`✅ You bought ${btcBought.toFixed(6)} BTC!`);
+            document.getElementById("exchange-amount").value = "";
+            loadDashboard();
+        }
+
+        // ---------- UPDATE PROFILE ----------
+        async function updateProfile() {
+            let newUsername = document.getElementById("new-username").value.trim();
+            let newFullName = document.getElementById("new-fullname").value.trim();
+            if (newUsername === "" && newFullName === "") { alert("Please enter a new username or full name."); return; }
+
+            let updates = {};
+            if (newUsername !== "") updates.username = newUsername;
+            if (newFullName !== "") updates.full_name = newFullName;
+
+            const { error } = await sb.from('profiles').update(updates).eq('id', currentUser.id);
+            if (error) { alert("Could not update: " + error.message); return; }
+
+            alert("✅ Profile updated!");
+            document.getElementById("new-username").value = "";
+            document.getElementById("new-fullname").value = "";
+            loadDashboard();
+        }
+
+        // ---------- HISTORY ----------
+        async function showHistory() {
+            let historyBox = document.getElementById("history-box");
+            let historyList = document.getElementById("history-list");
+            historyList.innerHTML = "<li>Loading...</li>";
+            historyBox.classList.remove("hidden");
+
+            const { data: history, error } = await sb
+                .from('transactions').select('action, amount, created_at')
+                .eq('user_id', currentUser.id).order('created_at', { ascending: false });
+
+            if (error) { historyList.innerHTML = "<li>Error loading history.</li>"; return; }
+
+            historyList.innerHTML = "";
+            if (history.length === 0) { historyList.innerHTML = "<li>No transactions yet.</li>"; }
+            else {
+                history.forEach(function(item) {
+                    let li = document.createElement("li");
+                    let date = new Date(item.created_at).toLocaleString();
+                    li.innerText = `${date} — ${item.action}: $${item.amount}`;
+                    historyList.appendChild(li);
+                });
+            }
+        }
+
+        // ---------- CHANGE PASSWORD ----------
+        async function changePassword() {
+            let newPass = document.getElementById("new-password").value;
+            if (newPass.length < 4) { alert("Password must be at least 4 characters long!"); return; }
+
+            const { error } = await sb.auth.updateUser({ password: newPass });
+            if (error) { alert("Error: " + error.message); }
+            else { alert("Password changed successfully!"); document.getElementById("new-password").value = ""; }
+        }
+
+        // ---------- LOGOUT ----------
+        async function logout() {
+            await sb.auth.signOut();
+            localStorage.setItem("isLoggedIn", "false");
+            window.location.href = "index.html";
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revolut - Open a bank account</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <nav>
+        <img src="revolutlogo.jpg" alt="Revolut" class="nav-logo">
+        <div class="nav-links">
+            <a href="personal.html">Personal</a>
+            <a href="business.html">Business</a>
+            <a href="features.html">Features</a>
+            <a href="help.html">Help</a>
+        </div>
+    </nav>
+
+    <!-- ===== HERO (login card sits here) ===== -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Open a Revolut bank account</h1>
+            <p>Smoothly send, spend, save, and more with 24/7 customer support in-app. Bank on us — your money will thank you.</p>
+            <button class="hero-btn" onclick="document.getElementById('email').focus()">Open a bank account</button>
+        </div>
+
+        <div class="login-wrapper">
+            <h2>Welcome Back</h2>
+            <input type="email" id="email" placeholder="Enter Email">
+            <input type="password" id="password" placeholder="Enter Password">
+            <button onclick="login()">Log In</button>
+            <span class="toggle-link">
+                <span>Don't have an account? </span>
+                <a href="signup.html">Sign Up</a>
+            </span>
+        </div>
+    </div>
+
+    <!-- ===== TRUST BAR ===== -->
+    <section class="trust-bar">
+        <div class="trust-item">
+            <div class="trust-icon">★</div>
+            <div>
+                <div class="trust-title">Rated 4.7 on Trustpilot</div>
+                <div class="trust-sub">Trusted by millions worldwide</div>
+            </div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-icon">👥</div>
+            <div>
+                <div class="trust-title">Used by 80+ million customers</div>
+                <div class="trust-sub">Across Europe, the Americas, Asia, and Australia</div>
+            </div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-icon">🏆</div>
+            <div>
+                <div class="trust-title">'Most Innovative Company in Personal Finance 2024'</div>
+                <div class="trust-sub">by FastCompany</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FEATURES GRID ===== -->
+    <section class="section">
+        <h2 class="section-title">Everything you need, in one spot</h2>
+        <p class="section-sub">Send, spend, save, and invest — all from a single app with no hidden fees.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💸</div>
+                <h3>Earn up to 4% AER (variable), paid daily</h3>
+                <p>Watch your money grow with competitive rates. Rates vary by plan. Fees and Paid Plan T&amp;Cs apply.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3>Send money abroad at competitive rates</h3>
+                <p>Transfer money around the world 24/7 in just a few taps.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">➕</div>
+                <h3>Make Revolut your main bank account</h3>
+                <p>Use the Current Account Switch Service (CASS) to direct your salary, payments, and your money from another account to Revolut, for free.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&amp;</div>
+                <h3>Open accounts, together</h3>
+                <p>Share finances with a Joint account or try a Kids &amp; Teens account.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Simplify freelance finances</h3>
+                <p>Open a Pro account to manage freelance income and earn up to 1% cashback on expenses. Cashback depends on your plan.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">→</div>
+                <h3>Pay back friends, instantly</h3>
+                <p>Chat, send, and receive money among your Revolut friends.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Budget with Pockets</h3>
+                <p>Stash cash aside for subscriptions, Direct Debits, and bills.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3>Hold multiple currencies</h3>
+                <p>Hold and exchange money in 30+ currencies with Revolut exchange rate. No additional fees Monday–Friday, within your plan allowance.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3>Start investing</h3>
+                <p>Get your money moving and enjoy access to thousands of global company stocks. Capital at risk. You can lose your investment.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MONITOR YOUR MONEY ===== -->
+    <section class="section dark-section">
+        <h2 class="section-title">Monitor your money</h2>
+        <p class="section-sub">Keep tabs on every penny that goes in or out of your account with real-time notifications.</p>
+
+        <div class="monitor-grid">
+            <div class="monitor-card">
+                <div class="monitor-icon">🔔</div>
+                <h4>Real-time notifications</h4>
+                <p>Know instantly whenever money comes in or goes out of your account.</p>
+            </div>
+            <div class="monitor-card">
+                <div class="monitor-icon">📉</div>
+                <h4>Monthly budgets</h4>
+                <p>Set spending limits and watch your progress with a visual breakdown.</p>
+            </div>
+            <div class="monitor-card">
+                <div class="monitor-icon">🍎</div>
+                <h4>Category insights</h4>
+                <p>See exactly where your money goes — from groceries to subscriptions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SWITCH IN 3 STEPS ===== -->
+    <section class="section">
+        <h2 class="section-title">Switch to Revolut in 3 steps</h2>
+        <p class="section-sub">It's free, simple, and stress-free. Backed by the Current Account Switch Guarantee.</p>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h4>Create your account</h4>
+                <p>Sign up in minutes with just your email and a password.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h4>Verify your identity</h4>
+                <p>We'll confirm it's really you — this keeps your money safe.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h4>Start banking</h4>
+                <p>Deposit funds, send money, exchange crypto, and track everything in real-time.</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="signup.html"><button class="hero-btn" style="background:#4CAF50; color:white;">Join Revolut</button></a>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p><strong>Revolut Bank UK Ltd</strong> is registered in England and Wales (Registered No. 12871051). Registered address: 30 South Colonnade, London, E14 5HX. Authorised by the Prudential Regulation Authority and regulated by the Financial Conduct Authority and Prudential Regulation Authority (Financial Services Register No. 981170).</p>
+            <p>Revolut Ltd is registered in England and Wales (No. 08804411), is authorised by the Financial Conduct Authority to offer e-money and payment services under the Electronic Money Regulations 2011 (FRN: 900562), and is registered with the Financial Conduct Authority to offer cryptocurrency services under the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017.</p>
+            <p>Investment services are provided by Revolut Trading Ltd (No. 11567840), authorised and regulated by the Financial Conduct Authority (FRN: 933846). Capital at risk. You can lose your investment.</p>
+            <p style="margin-top: 20px;">© Revolut Bank UK Ltd 2026.</em></p>
+        </div>
+    </footer>
+
+    <script>
+        const SUPABASE_URL = 'https://nlbfetgibsmhfoinvkst.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_w4c-2IfXyKHLKWxo9VvjAQ_7gMExdkj';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function login() {
+            let email = document.getElementById("email").value.trim();
+            let pass = document.getElementById("password").value;
+
+            if (email === "" || pass === "") {
+                alert("Please fill in both boxes!");
+                return;
+            }
+
+            const { data, error } = await sb.auth.signInWithPassword({
+                email: email,
+                password: pass
+            });
+
+            if (error) {
+                alert("Login failed: " + error.message);
+                return;
+            }
+
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("userId", data.user.id);
+            window.location.href = "dashboard.html";
+        }
+    </script>
+
+</body>
+</html>

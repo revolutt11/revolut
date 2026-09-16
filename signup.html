@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revolut - Create Account</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <nav>
+        <img src="revolutlogo.jpg" alt="Revolut" class="nav-logo">
+        <div class="nav-links">
+            <a href="personal.html">Personal</a>
+            <a href="business.html">Business</a>
+            <a href="features.html">Features</a>
+            <a href="help.html">Help</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Join Revolut</h1>
+            <p>Open a free account in minutes. No fees. No hidden charges. Just simple banking.</p>
+            <button class="hero-btn" onclick="window.location.href='index.html'">Back to Login</button>
+        </div>
+
+        <div class="login-wrapper">
+            <h2>Create Account</h2>
+
+            <input type="text" id="username" placeholder="Choose a Username">
+            <input type="email" id="email" placeholder="Your Email Address">
+            <input type="password" id="password" placeholder="Create a Password">
+            <input type="password" id="confirm-password" placeholder="Confirm Password">
+
+            <button onclick="createAccount()">Create My Account</button>
+
+            <span class="toggle-link">
+                <span>Already have an account? </span>
+                <a href="index.html">Log In</a>
+            </span>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://nlbfetgibsmhfoinvkst.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_w4c-2IfXyKHLKWxo9VvjAQ_7gMExdkj';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function createAccount() {
+            let username = document.getElementById("username").value.trim();
+            let email = document.getElementById("email").value.trim();
+            let pass = document.getElementById("password").value;
+            let confirmPass = document.getElementById("confirm-password").value;
+
+            // Validation
+            if (username === "" || email === "" || pass === "") {
+                alert("Please fill in all fields.");
+                return;
+            }
+            if (!email.includes("@") || !email.includes(".")) {
+                alert("Please enter a valid email address (e.g. name@gmail.com).");
+                return;
+            }
+            if (pass.length < 4) {
+                alert("Password must be at least 4 characters long.");
+                return;
+            }
+            if (pass !== confirmPass) {
+                alert("Passwords do not match. Please try again.");
+                return;
+            }
+
+            // Step 1: Create the user in Supabase Authentication (with their REAL email)
+            const { data: authData, error: authError } = await sb.auth.signUp({
+                email: email,
+                password: pass
+            });
+
+            if (authError) {
+                alert("Error creating account: " + authError.message);
+                return;
+            }
+
+            // Step 2: Create their profile with $1,000 starting balance
+            const { error: profileError } = await sb
+                .from('profiles')
+                .insert([{
+                    id: authData.user.id,
+                    username: username,
+                    usd_balance: 1000.00,
+                    crypto_balance: 0.00
+                }]);
+
+            if (profileError) {
+                alert("Error saving profile: " + profileError.message);
+                return;
+            }
+
+            alert("🎉 Account created! You got $1,000 to start. Please log in.");
+            window.location.href = "index.html";
+        }
+    </script>
+
+</body>
+</html>
